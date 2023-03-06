@@ -11,12 +11,12 @@ class AjaxController extends Controller
 
         $add = Ajax::get();
 
-        return view('index', compact('add'));
+        return view('user.index', compact('add'));
     }
 
     public function add(){
 
-        return view('add');
+        return view('user.add');
     }
 
     public function store(Request $request){
@@ -35,7 +35,7 @@ class AjaxController extends Controller
     public function edit($id){
 
         $add = Ajax::find($id);
-        return view('edit', compact('add'));
+        return view('user.edit', compact('add'));
 
     }
 
