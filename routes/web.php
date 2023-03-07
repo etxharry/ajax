@@ -31,3 +31,5 @@ Route::get('/students',[StudentController::class,'index'])->name('student.index'
 Route::post('/students',[StudentController::class,'addStudent'])->name('student.add');
 Route::get('/students/{id}',[StudentController::class,'getStudentById']);
 Route::post('/student',[StudentController::class,'updateStudent'])->name('student.update');
+Route::delete('/students/{id}',[StudentController::class,'delete']);
+Route::delete('/selected-students',[StudentController::class,'bulkdelete'])->name('student.bulkdeleted');

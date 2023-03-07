@@ -27,12 +27,16 @@
                         Students
                         <span>
                             <a href="#" class="btn btn-success" data-toggle="modal" data-target="#studentModal">Add New Student</a>
+                            <a href="#" class="btn btn-danger" id="deleteAllSelected">Bulk Delete</a>
                         </span>
                     </div>
                     <div class="card-body">
                         <table class="table" id="studentTable">
                             <thead>
                                 <tr>
+                                    <th>
+                                        <input type="checkbox" name="" id="checkAll">
+                                    </th>
                                     <th>First Name</th>
                                     <th>Last Name</th>
                                     <th>Email</th>
@@ -43,12 +47,16 @@
                             <tbody>
                                 @foreach ($students as $student)
                                     <tr id="sid{{ $student->id }}">
+                                        <td>
+                                            <input type="checkbox" name="ids" class="checkBoxClass" value="{{ $student->id }}">
+                                        </td>
                                         <td>{{ $student->firstname }}</td>
                                         <td>{{ $student->lastname }}</td>
                                         <td>{{ $student->email }}</td>
                                         <td>{{ $student->contact }}</td>
                                         <td>
                                             <a href="javascript:void(0)" onclick="editStudent({{ $student->id }})" class="btn btn-info">Edit</a>
+                                            <a href="javascript:void(0)" onclick="deleteStudent({{ $student->id }})" class="btn btn-danger">Delete</a>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -172,7 +180,7 @@
         {
             if(response)
             {
-                $("#studentTable tbody").prepend('<tr><td>'+ response.firstname +'</td><td>'+ response.lastname +'</td><td>'+ response.email +'</td><td>'+ response.contact +'</td><td>'+  +'</td></tr>');
+                $("#studentTable tbody").prepend('<tr><td>'+ response.firstname +'</td><td>'+ response.lastname +'</td><td>'+ response.email +'</td><td>'+ response.contact +'</td><td><a onclick="editStudent('+ response.id +')" class= "btn btn-info text-white">Edit</a><a onclick="deleteStudent('+ response.id +')" class= "btn btn-danger text-white">Delete</a></td></tr>');
                 $("#studentForm")[0].reset();
                 $("#studentModal").modal('hide');
             }
@@ -228,11 +236,58 @@
         });
 
     });
-
-
-
 </script>
 
+<script>
+    function deleteStudent (id)
+    {
+        if(confirm("Do You Want To Delete Record?"))
+        {
+            $.ajax({
+                url : '/students/'+id,
+                type : 'DELETE',
+                data : {
+                    _token : $("input[name=_token]").val()
+                },
+                success : function (response)
+                {
+                    $("#sid"+id).remove();
+                }
+            });
+        }
+    }
+</script>
+
+<script>
+    $(function(e){
+        $("#checkAll").click(function(){
+            $(".checkBoxClass").prop('checked',$(this).prop('checked'));
+        });
+        $("#deleteAllSelected").click(function(e){
+            e.preventDefault();
+
+            var allids = [];
+
+            $("input:checkbox[name=ids]:checked").each(function(){
+                allids.push($(this).val());
+            });
+
+            $.ajax({
+                url : "{{ route('student.bulkdeleted') }}",
+                type : "DELETE",
+                data : {
+                    _token : $("input[name=_token]").val(),
+                    ids : allids
+                },
+                success : function(response){
+                    $.each(allids,function(key,val){
+                        $("#ids"+val).remove();
+                    })
+                }
+            })
+        })
+    });
+</script>
 
 </body>
 
